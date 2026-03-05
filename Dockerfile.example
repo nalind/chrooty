@@ -1,0 +1,7 @@
+ARG FEDORAVERSION=43
+FROM registry.fedoraproject.org/fedora-minimal:${FEDORAVERSION}
+RUN --mount=type=bind,from=chrooty,target=/usr/local/bin \
+    --mount=type=bind,from=registry.fedoraproject.org/fedora,target=/tools,rw \
+    chrooty dnf -y update --installroot=/mnt/sysimage && \
+    chrooty dnf -y install golang --installroot=/mnt/sysimage && \
+    chrooty dnf -y clean all --installroot=/mnt/sysimage
