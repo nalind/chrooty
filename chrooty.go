@@ -122,11 +122,15 @@ func doTheThing(_ *cobra.Command, args []string) error {
 		if err := copyAndMountFile("/etc/hosts", mountChrootHosts); err != nil {
 			return err
 		}
+	} else if mountChrootHosts {
+		logrus.Warn("--mount-chroot-etc-hosts ignored because --copy-tools-etc-hosts disabled")
 	}
 	if copyToolsResolvConf {
 		if err := copyAndMountFile("/etc/resolv.conf", mountChrootResolvConf); err != nil {
 			return err
 		}
+	} else if mountChrootResolvConf {
+		logrus.Warn("--mount-chroot-etc-resolv-conf ignored because --copy-tools-etc-resolv-conf disabled")
 	}
 	if err := os.Chdir(filepath.Join(toolMountPoint, toolCwd)); err != nil {
 		return err
