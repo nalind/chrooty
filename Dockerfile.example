@@ -1,4 +1,4 @@
-ARG FEDORAVERSION=43
+ARG FEDORAVERSION=44
 FROM registry.fedoraproject.org/fedora-minimal:${FEDORAVERSION}
 RUN --mount=type=bind,from=chrooty,target=/usr/local/bin \
     --mount=type=bind,from=registry.fedoraproject.org/fedora,target=/tools,rw \
