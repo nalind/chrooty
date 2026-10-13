@@ -16,21 +16,21 @@ the "registry.fedoraproject.org/fedora" image, passing to it the current stage's
 its "--installroot" flag, you could:
 
 ```Dockerfile
-RUN --mount=type=bind,from=chrooty,target=/usr/local/bin \
+RUN --mount=type=bind,from=chrooty,target=/var/cache/.build \
     --mount=type=bind,from=registry.fedoraproject.org/fedora,target=/tools,rw \
-    chrooty dnf -y update --installroot=/mnt/sysimage && \
-    chrooty dnf -y install golang --installroot=/mnt/sysimage && \
-    chrooty dnf -y clean all --installroot=/mnt/sysimage
+    /var/cache/.build/chrooty dnf -y update --installroot=/mnt/sysimage && \
+    /var/cache/.build/chrooty dnf -y install golang --installroot=/mnt/sysimage && \
+    /var/cache/.build/chrooty dnf -y clean all --installroot=/mnt/sysimage
 ```
 
 The chrooty binary provided in this image will:
-* create a new user namespace if not running privileges
+* create a new user namespace if not running with privileges
   - requires access to the `unshare()` syscall and cap_setfcap
 * create a new mount namespace
   - requires access to the `unshare()` syscall
 * assume that the image providing the command you want to run (the "tools image") is
-  mounted by the image builder, by default at "/tools", or at another location specified using the
-  optional `--tools-mount-point` flag
+  mounted by the image builder, by default at "/tools", or at another location specified using
+  the optional `--tools-mount-point` flag
 * recursively bind mount the root directory to a location (the "chroot mount point") under the tools
   image's mount point, by default "/mnt/sysimage", or to another location specified using the
   `--chroot-mount-point` flag
