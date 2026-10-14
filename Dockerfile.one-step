@@ -1,0 +1,19 @@
+ARG FEDORA=44
+ARG GOLANG=1.26
+
+FROM registry.fedoraproject.org/fedora:${FEDORA} AS tools
+
+FROM golang:${GOLANG} AS build
+WORKDIR /root/go/src/github.com/nalind/chrooty
+COPY . /root/go/src/github.com/nalind/chrooty/
+RUN CGO_ENABLED=0 go build
+
+FROM scratch AS chrooty
+COPY --from=build /root/go/src/github.com/nalind/chrooty/chrooty /
+
+FROM scratch
+RUN --mount=type=bind,from=chrooty,target=/var/cache/.build \
+    --mount=type=bind,from=tools,target=/tools,rw \
+    ["/var/cache/.build/chrooty", "dnf", "-y", "install", "--use-host-config", "--installroot=/mnt/sysimage", "bash", "golang"]
+ENV container=oci
+CMD ["/bin/bash"]
