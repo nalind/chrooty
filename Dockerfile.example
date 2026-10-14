@@ -1,8 +1,10 @@
 ARG FEDORAVERSION=44
+ARG CHROOTYIMAGE=localhost/chrooty
 FROM registry.fedoraproject.org/fedora:${FEDORAVERSION} AS tools
+FROM ${CHROOTYIMAGE} AS chrooty
 FROM scratch
 ENV container=oci
 RUN --mount=type=bind,from=localhost/chrooty,target=/var/cache/.build \
     --mount=type=bind,from=tools,target=/tools,rw \
-    ["/var/cache/.build/chrooty", "--mount-tools-tmpfs=/run,size=50m", "--mount-tools-tmpfs=/tmp", "dnf", "-y", "install", "--use-host-config", "--installroot=/mnt/sysimage", "bash", "golang"]
+    ["/var/cache/.build/chrooty", "dnf", "-y", "install", "--use-host-config", "--installroot=/mnt/sysimage", "bash", "golang"]
 CMD ["/bin/bash"]
